@@ -3,7 +3,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 import asyncio
 
-TOKEN = os.getenv("BOT_TOKEN")  # Используем переменные окружения
+TOKEN = os.getenv("7555987714:AAFyWNVqbiTXVOfpMnpKd-aDKfS5HvLWYNk")  # Используем переменные окружения
 bot = AsyncTeleBot(TOKEN)
 
 @bot.message_handler(commands=["start"])
