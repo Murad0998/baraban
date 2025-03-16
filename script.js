@@ -22,7 +22,7 @@ function drawWheel() {
 
         ctx.save();
         ctx.translate(centerX, centerY);
-        ctx.rotate(sliceAngle * (i + 0.5));
+        ctx.rotate(sliceAngle * i + sliceAngle / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#000";
         ctx.font = "20px Arial";
@@ -38,19 +38,15 @@ function spinWheel() {
     let randomAngle = Math.floor(Math.random() * 360) + 1800;
     angle += randomAngle;
 
-    canvas.style.transition = "transform 4s ease-out";
-    canvas.style.transform = `rotate(${angle}deg)`;
+    let sectorSize = 360 / prizes.length;
+    let finalAngle = angle % 360;
+    let winningIndex = Math.floor((360 - finalAngle) / sectorSize) % prizes.length;
+    let winningPrize = prizes[winningIndex];
 
     setTimeout(() => {
-        let finalAngle = angle % 360;
-        let sectorSize = 360 / prizes.length;
-        let winningIndex = Math.floor((360 - finalAngle) / sectorSize) % prizes.length;
-        let winningPrize = prizes[winningIndex];
-
         spinning = false;
-
         if (window.Telegram && Telegram.WebApp) {
-            Telegram.WebApp.sendData(`Вы выиграли: ${winningPrize}`);
+            Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
         } else {
             alert(`Вы выиграли: ${winningPrize}`);
         }
