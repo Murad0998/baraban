@@ -5,23 +5,30 @@ const spinButton = document.getElementById("spinButton");
 const prizes = ["Приз 1", "Приз 2", "Приз 3", "Приз 4", "Приз 5", "Приз 6"];
 let angle = 0;
 let spinning = false;
+let targetAngle = 0;
+let speed = 0;
+let animationFrame;
 
-function drawWheel() {
+function drawWheel(rotation) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     const radius = 150;
     const sliceAngle = (2 * Math.PI) / prizes.length;
 
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(rotation);
+
     for (let i = 0; i < prizes.length; i++) {
         ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, sliceAngle * i, sliceAngle * (i + 1));
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, sliceAngle * i, sliceAngle * (i + 1));
         ctx.fillStyle = i % 2 === 0 ? "#FFD700" : "#FF4500";
         ctx.fill();
         ctx.stroke();
 
         ctx.save();
-        ctx.translate(centerX, centerY);
         ctx.rotate(sliceAngle * i + sliceAngle / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#000";
@@ -29,29 +36,43 @@ function drawWheel() {
         ctx.fillText(prizes[i], radius - 10, 10);
         ctx.restore();
     }
+    ctx.restore();
+}
+
+function animateSpin() {
+    if (Math.abs(targetAngle - angle) > 0.01) {
+        angle += speed;
+        speed *= 0.98;  // Постепенное замедление
+        animationFrame = requestAnimationFrame(animateSpin);
+    } else {
+        cancelAnimationFrame(animationFrame);
+        angle = targetAngle;
+
+        let finalAngle = angle % (2 * Math.PI);
+        let sectorSize = (2 * Math.PI) / prizes.length;
+        let winningIndex = Math.floor((2 * Math.PI - finalAngle) / sectorSize) % prizes.length;
+        let winningPrize = prizes[winningIndex];
+
+        spinning = false;
+
+        if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
+        } else {
+            alert(`Вы выиграли: ${winningPrize}`);
+        }
+    }
+    drawWheel(angle);
 }
 
 function spinWheel() {
     if (spinning) return;
     spinning = true;
 
-    let randomAngle = Math.floor(Math.random() * 360) + 1800;
-    angle += randomAngle;
-
-    let sectorSize = 360 / prizes.length;
-    let finalAngle = angle % 360;
-    let winningIndex = Math.floor((360 - finalAngle) / sectorSize) % prizes.length;
-    let winningPrize = prizes[winningIndex];
-
-    setTimeout(() => {
-        spinning = false;
-        if (window.Telegram && Telegram.WebApp) {
-            Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
-        } else {
-            alert(`Вы выиграли: ${winningPrize}`);
-        }
-    }, 4000);
+    let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI); // Минимум 5 полных оборотов
+    targetAngle = angle + randomAngle;
+    speed = (targetAngle - angle) / 60; // Регулировка скорости
+    animateSpin();
 }
 
-drawWheel();
+drawWheel(angle);
 spinButton.addEventListener("click", spinWheel);
