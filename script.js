@@ -97,7 +97,7 @@ function animateSpin(currentTime) {
     const sectorSize = (2 * Math.PI) / prizes.length;
 
     // Сдвигаем угол, учитывая положение стрелки внизу (3π/2)
-    let shiftedAngle = (3 * Math.PI) / 2 - angle + sectorSize / 2;
+    let shiftedAngle = (Math.PI) - angle + sectorSize / 2;
 
     // Приводим к [0..2π]
     shiftedAngle = (shiftedAngle + 2 * Math.PI) % (2 * Math.PI);
