@@ -8,8 +8,9 @@ const prizes = ["Дилдо", "Презики", "Юлдаш", "Приз 4", "П�
 let angle = 0;
 let spinning = false;
 let targetAngle = 0;
-let speed = 0;
-let animationFrame;
+let startAngle = 0;
+let startTime = 0;
+const totalDuration = 4000; // Длительность спина - 4 секунды
 
 function drawWheel(rotation) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -41,48 +42,50 @@ function drawWheel(rotation) {
     ctx.restore();
 }
 
-function animateSpin() {
-    if (Math.abs(targetAngle - angle) > 0.2) { // Увеличено значение для гарантированной остановки
-        console.log("Колесо крутится... Угол:", angle);
-        angle += speed;
-        speed *= 0.97; // Постепенное замедление
-        animationFrame = requestAnimationFrame(animateSpin);
-    } else {
-        console.log("Анимация завершена! Определяем приз...");
-        cancelAnimationFrame(animationFrame);
-        angle = targetAngle % (2 * Math.PI); // Приводим угол в диапазон 0 - 2π
+function animateSpin(currentTime) {
+    const elapsed = currentTime - startTime;
+    let progress = elapsed / totalDuration;
+    if (progress > 1) progress = 1;
 
-        let sectorSize = (2 * Math.PI) / prizes.length;
-        let winningIndex = Math.floor((angle + sectorSize / 2) / sectorSize) % prizes.length;
-        let winningPrize = prizes[winningIndex];
+    // Функция easeOutCubic для плавного замедления
+    const easedProgress = 1 - Math.pow(1 - progress, 3);
+    angle = startAngle + (targetAngle - startAngle) * easedProgress;
 
-        console.log(`Выигранный приз: ${winningPrize}`);
-
-        spinning = false;
-
-        if (window.Telegram && Telegram.WebApp) {
-            console.log("Сообщение через Telegram WebApp API");
-            Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
-        } else {
-            console.log("Вывод через alert");
-            setTimeout(() => {
-                alert(`Вы выиграли: ${winningPrize}`);
-            }, 500);
-        }
-    }
     drawWheel(angle);
+
+    if (progress < 1) {
+         requestAnimationFrame(animateSpin);
+    } else {
+         spinning = false;
+         // Приводим угол к диапазону 0 - 2π
+         angle = targetAngle % (2 * Math.PI);
+         let sectorSize = (2 * Math.PI) / prizes.length;
+         let winningIndex = Math.floor((angle + sectorSize / 2) / sectorSize) % prizes.length;
+         let winningPrize = prizes[winningIndex];
+         console.log(`Выигранный приз: ${winningPrize}`);
+
+         // Отправка сообщения через Telegram WebApp API или через alert
+         if (window.Telegram && Telegram.WebApp) {
+             console.log("Сообщение через Telegram WebApp API");
+             Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
+         } else {
+             console.log("Вывод через alert");
+             setTimeout(() => {
+                 alert(`Вы выиграли: ${winningPrize}`);
+             }, 500);
+         }
+    }
 }
 
 function spinWheel() {
     if (spinning) return;
     spinning = true;
-
-    console.log("Кнопка нажата, запуск спина!");
-
-    let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI); // Минимум 5 оборотов
-    targetAngle = angle + randomAngle;
-    speed = (targetAngle - angle) / 50; // Скорость изменена для плавного замедления
-    animateSpin();
+    startAngle = angle;
+    // Вычисляем случайный угол, минимум 5 оборотов
+    let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI);
+    targetAngle = startAngle + randomAngle;
+    startTime = performance.now();
+    requestAnimationFrame(animateSpin);
 }
 
 console.log("Назначаем обработчик кнопки...");
