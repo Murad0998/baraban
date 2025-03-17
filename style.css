@@ -5,32 +5,31 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
     color: #333;
+    margin-top: 20px;
 }
 
 .wheel-container {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px auto;
-    height: 400px; /* Устанавливаем высоту барабана */
+    display: inline-block;
+    margin: 20px;
 }
 
 .arrow {
     position: absolute;
-    top: auto; /* Убираем верхнее позиционирование */
-    bottom: -10px; /* Перемещаем стрелку вниз */
+    bottom: -50px;
     left: 50%;
-    transform: translateX(-50%) rotate(180deg); /* Разворачиваем стрелку вниз */
+    transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
-    border-top: 40px solid black; /* Меняем направление */
+    border-top: 40px solid #8B0000; /* Тёмно-красная стрелка */
     z-index: 10;
 }
 
@@ -42,6 +41,7 @@ button {
     background-color: #008CBA;
     color: white;
     border-radius: 5px;
+    margin-top: 20px;
 }
 
 button:active {
