@@ -55,9 +55,13 @@ function animateSpin() {
         spinning = false;
 
         // Отображаем результат
+        console.log(`Выигранный приз: ${winningPrize}`);
+
         if (window.Telegram && Telegram.WebApp) {
+            console.log("Сообщение должно появиться в Telegram");
             Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
         } else {
+            console.log("Сообщение должно появиться в alert");
             alert(`Вы выиграли: ${winningPrize}`);
         }
     }
