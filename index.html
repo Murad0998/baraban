@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Барабан с призами</title>
   <meta name="theme-color" content="#008CBA">
@@ -15,16 +15,13 @@
 
   <!-- Контейнер для колеса и стрелки -->
   <div class="wheel-container">
-    <!-- ВАЖНО: если хотите, чтобы стрелка была внизу,
-         обычно её помещают после canvas, но при абсолютном позиционировании
-         главное, чтобы стили были корректны. -->
     <canvas id="wheelCanvas" width="400" height="400"></canvas>
     <div class="arrow"></div>
+    <!-- Кнопка в центре колеса -->
+    <button id="spinButton" class="spin-button">Старт</button>
   </div>
 
-  <button id="spinButton">Крутить</button>
-
   <!-- Подключаем скрипт -->
-  <script src="script.js" defer></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -2,49 +2,40 @@ const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
 const spinButton = document.getElementById("spinButton");
 
-// Примерные призы (можете заменить своими)
+// Примерные призы — меняйте на свои
 const prizes = [
-  "iPhone 13",
+  "iPhone 14",
   "Скидка 50%",
   "AirPods",
   "Крутая футболка",
-  "iPhone 14",
+  "iPhone 13",
   "Промокод на суши",
-  "Беспл. подписка Spotify",
+  "Подписка Spotify",
   "Сумка Nike"
 ];
 
+// Углы для анимации
 let angle = 0;          // Текущий угол колеса
-let spinning = false;   // Флаг, что колесо крутится
-let targetAngle = 0;    // Итоговый угол (куда крутим)
+let spinning = false;   // Флаг, идёт ли вращение
+let targetAngle = 0;    // Итоговый угол
 let startAngle = 0;     // Угол начала анимации
 let startTime = 0;      // Время старта анимации
 
-const totalDuration = 4000; // 4 секунды анимации
+const totalDuration = 4000; // 4 секунды вращения
 
 /**
- * Рисует колесо фортуны с учётом текущего угла rotation.
+ * Отрисовка колеса с учётом текущего угла rotation.
  */
 function drawWheel(rotation) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
+  // Делаем радиус чуть меньше, чтобы не упираться в границы
   const radius = Math.min(canvas.width, canvas.height) / 2 - 10;
   const sliceAngle = (2 * Math.PI) / prizes.length;
 
-  // Внешнее свечение колеса
-  ctx.save();
-  ctx.shadowColor = "#00ffc3";
-  ctx.shadowBlur = 15;
-  ctx.strokeStyle = "#00ffc3";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius + 5, 0, 2 * Math.PI);
-  ctx.stroke();
-  ctx.restore();
-
-  // Сдвигаем систему координат к центру и вращаем
+  // Переносим начало координат в центр колеса и вращаем
   ctx.save();
   ctx.translate(centerX, centerY);
   ctx.rotate(rotation);
@@ -58,15 +49,15 @@ function drawWheel(rotation) {
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.arc(0, 0, radius, startSlice, endSlice);
-    ctx.fillStyle = "#071a2d"; // Тёмный сектор
+    ctx.fillStyle = "#0c1f27"; // Тёмный сектор
     ctx.fill();
 
-    // Обводка сектора
+    // Обводка сектора неоновым цветом
     ctx.strokeStyle = "#00ffc3";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Текст (поворачиваемся к середине сектора)
+    // Текст
     ctx.save();
     ctx.rotate(startSlice + sliceAngle / 2);
     ctx.textAlign = "right";
@@ -77,24 +68,10 @@ function drawWheel(rotation) {
   }
 
   ctx.restore();
-
-  // Центральный круг с буквой (как на референсе, буква "L")
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, 40, 0, 2 * Math.PI);
-  ctx.fillStyle = "#00ffc3";
-  ctx.fill();
-
-  ctx.fillStyle = "#071a2d";
-  ctx.font = "bold 24px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("L", centerX, centerY);
-  ctx.restore();
 }
 
 /**
- * Анимация вращения
+ * Анимация вращения через requestAnimationFrame
  */
 function animateSpin(currentTime) {
   const elapsed = currentTime - startTime;
@@ -110,19 +87,24 @@ function animateSpin(currentTime) {
   if (progress < 1) {
     requestAnimationFrame(animateSpin);
   } else {
-    // Закончили анимацию
+    // Закончили вращение
     spinning = false;
 
-    // Нормируем угол в диапазон [0..2π]
+    // Приводим угол к диапазону 0..2π
     angle = targetAngle % (2 * Math.PI);
 
-    // Вычисляем сектор, который смотрит на стрелку снизу (по сути, угол = π/2)
+    // Размер одного сектора
     const sectorSize = (2 * Math.PI) / prizes.length;
 
-    // Смещаем угол, чтобы учесть позицию стрелки внизу (угол ~ π/2 в математической системе)
-    let shiftedAngle = angle + sectorSize / 2 - Math.PI / 2;
+    /*
+      Поскольку стрелка находится снизу (физически угол 3π/2),
+      сдвигаем угол на ( - 3π/2 ), чтобы понять, какой сектор выиграл.
+      Плюс небольшая поправка на половину сектора (sectorSize/2),
+      чтобы точно определить индекс сектора.
+    */
+    let shiftedAngle = angle + sectorSize / 2 - (3 * Math.PI) / 2;
 
-    // Приводим к диапазону [0..2π]
+    // Нормируем угол в [0..2π]
     shiftedAngle = (shiftedAngle + 2 * Math.PI) % (2 * Math.PI);
 
     const winningIndex = Math.floor(shiftedAngle / sectorSize);
@@ -130,7 +112,7 @@ function animateSpin(currentTime) {
 
     console.log("Выигранный приз:", winningPrize);
 
-    // Вывод через Telegram.WebApp или alert
+    // Выводим результат (через Telegram.WebApp или alert)
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
     } else {
@@ -142,14 +124,14 @@ function animateSpin(currentTime) {
 }
 
 /**
- * Запускает вращение
+ * Запуск вращения
  */
 function spinWheel() {
-  if (spinning) return;
+  if (spinning) return; // Если уже крутится — не запускаем
   spinning = true;
   startAngle = angle;
 
-  // Случайный угол (минимум 5 оборотов)
+  // Минимум 5 оборотов + рандом
   const randomAngle = Math.random() * 2 * Math.PI + 5 * 2 * Math.PI;
   targetAngle = startAngle + randomAngle;
 
@@ -157,8 +139,8 @@ function spinWheel() {
   requestAnimationFrame(animateSpin);
 }
 
-// Назначаем обработчик на кнопку
+// Назначаем обработчик на нашу круглую кнопку в центре
 spinButton.addEventListener("click", spinWheel);
 
-// Первоначальная отрисовка (статичное колесо)
+// Начальная отрисовка (статичное колесо)
 drawWheel(angle);
