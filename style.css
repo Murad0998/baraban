@@ -20,7 +20,7 @@ h1 {
 .arrow {
     position: absolute;
     top: auto; /* Убираем верхнее позиционирование */
-    bottom: -15px; /* Перемещаем стрелку вниз */
+    bottom: -10px; /* Перемещаем стрелку вниз */
     left: 50%;
     transform: translateX(-50%) rotate(180deg); /* Разворачиваем стрелку вниз */
     width: 0;
