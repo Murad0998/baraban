@@ -88,29 +88,26 @@ function animateSpin(currentTime) {
     requestAnimationFrame(animateSpin);
   } else {
     // Закончили вращение
+    // Закончили вращение
     spinning = false;
 
-    // Приводим угол к диапазону 0..2π
+    // Нормируем угол [0..2π]
     angle = targetAngle % (2 * Math.PI);
 
-    // Размер одного сектора
     const sectorSize = (2 * Math.PI) / prizes.length;
 
-    /*
-      Поскольку стрелка находится снизу (физически угол 3π/2),
-      сдвигаем угол на ( - 3π/2 ), чтобы понять, какой сектор выиграл.
-      Плюс небольшая поправка на половину сектора (sectorSize/2),
-      чтобы точно определить индекс сектора.
-    */
-    let shiftedAngle = angle + sectorSize / 2 - (3 * Math.PI) / 2;
+    // Сдвигаем угол, учитывая положение стрелки внизу (3π/2)
+    let shiftedAngle = (3 * Math.PI) / 2 - angle + sectorSize / 2;
 
-    // Нормируем угол в [0..2π]
+    // Приводим к [0..2π]
     shiftedAngle = (shiftedAngle + 2 * Math.PI) % (2 * Math.PI);
 
     const winningIndex = Math.floor(shiftedAngle / sectorSize);
     const winningPrize = prizes[winningIndex];
 
     console.log("Выигранный приз:", winningPrize);
+
+    // Дальше — вывод результата через alert или Telegram.WebApp
 
     // Выводим результат (через Telegram.WebApp или alert)
     if (window.Telegram && Telegram.WebApp) {
