@@ -1,35 +1,40 @@
 body {
     text-align: center;
     font-family: Arial, sans-serif;
-    background-image: url('https://avatars.mds.yandex.net/i?id=0a519cf583382f6b3866ee6c6f45a0ca_l-7543473-images-thumbs&n=13.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-color: #0c1f27; /* Тёмный фон */
     margin: 0;
     padding: 0;
 }
 
 h1 {
-    color: #333;
+    color: #fff;
     margin-top: 20px;
 }
 
 .wheel-container {
     position: relative;
-    display: inline-block;
-    margin: 20px;
+    width: 400px;   /* Фиксируем ширину контейнера под размер canvas */
+    height: 400px;  /* Фиксируем высоту контейнера под размер canvas */
+    margin: 20px auto;
 }
 
+#wheelCanvas {
+    background: none;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Стрелка внизу, указывает вверх */
 .arrow {
     position: absolute;
-    bottom: -50px;
+    bottom: 0;            /* Привязываемся к нижней части контейнера */
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
-    border-top: 40px solid #8B0000; /* Тёмно-красная стрелка */
+    border-bottom: 40px solid #00ffc3; /* Стрелка «смотрит» вверх */
     z-index: 10;
 }
 

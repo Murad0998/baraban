@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Барабан с призами</title>
-    <meta name="theme-color" content="#008CBA">
-    <meta name="description" content="Игра: Крутите барабан и выигрывайте призы!">
-    
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Барабан с призами</title>
+  <meta name="theme-color" content="#008CBA">
+  <meta name="description" content="Игра: Крутите барабан и выигрывайте призы!">
+
+  <!-- Подключаем стили -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Крутите барабан!</h1>
-    <div class="wheel-container">
-        <div class="arrow"></div>
-        <canvas id="wheelCanvas" width="400" height="400"></canvas>
-    </div>
-    <button id="spinButton">Крутить</button>
+  <h1>Крутите барабан!</h1>
 
-    <script src="script.js" defer></script>
+  <!-- Контейнер для колеса и стрелки -->
+  <div class="wheel-container">
+    <!-- ВАЖНО: если хотите, чтобы стрелка была внизу,
+         обычно её помещают после canvas, но при абсолютном позиционировании
+         главное, чтобы стили были корректны. -->
+    <canvas id="wheelCanvas" width="400" height="400"></canvas>
+    <div class="arrow"></div>
+  </div>
+
+  <button id="spinButton">Крутить</button>
+
+  <!-- Подключаем скрипт -->
+  <script src="script.js" defer></script>
 </body>
 </html>
