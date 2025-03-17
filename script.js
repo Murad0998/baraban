@@ -42,10 +42,10 @@ function drawWheel(rotation) {
 }
 
 function animateSpin() {
-    if (Math.abs(targetAngle - angle) > 0.01) {
+    if (Math.abs(targetAngle - angle) > 0.2) { // Увеличено значение для гарантированной остановки
         console.log("Колесо крутится... Угол:", angle);
         angle += speed;
-        speed *= 0.98; // Постепенное замедление
+        speed *= 0.97; // Постепенное замедление
         animationFrame = requestAnimationFrame(animateSpin);
     } else {
         console.log("Анимация завершена! Определяем приз...");
@@ -81,7 +81,7 @@ function spinWheel() {
 
     let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI); // Минимум 5 оборотов
     targetAngle = angle + randomAngle;
-    speed = (targetAngle - angle) / 60;
+    speed = (targetAngle - angle) / 50; // Скорость изменена для плавного замедления
     animateSpin();
 }
 
