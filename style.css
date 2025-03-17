@@ -1,4 +1,6 @@
 body {
+    text-align: center;
+    font-family: Arial, sans-serif;
     background-image: url('https://avatars.mds.yandex.net/i?id=0a519cf583382f6b3866ee6c6f45a0ca_l-7543473-images-thumbs&n=13.jpg');
     background-size: cover;
     background-position: center;
