@@ -2,15 +2,16 @@ const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
 const spinButton = document.getElementById("spinButton");
 
-console.log("Скрипт загружен!"); // Проверяем, что скрипт запустился
+console.log("Скрипт загружен!");
 
 const prizes = ["Дилдо", "Презики", "Юлдаш", "Приз 4", "Приз 5", "Приз 6"];
 let angle = 0;
 let spinning = false;
+let hasSpun = false; // Флаг для одного вращения
 let targetAngle = 0;
 let startAngle = 0;
 let startTime = 0;
-const totalDuration = 4000; // Длительность спина - 4 секунды
+const totalDuration = 4000; // 4 секунды
 
 function drawWheel(rotation) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,7 +28,7 @@ function drawWheel(rotation) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.arc(0, 0, radius, sliceAngle * i, sliceAngle * (i + 1));
-        ctx.fillStyle = i % 2 === 0 ? "#4682B4" : "#00FA9A"; // Смена цветов
+        ctx.fillStyle = i % 2 === 0 ? "#4682B4" : "#00FA9A";
         ctx.fill();
         ctx.stroke();
 
@@ -47,7 +48,7 @@ function animateSpin(currentTime) {
     let progress = elapsed / totalDuration;
     if (progress > 1) progress = 1;
 
-    // Функция easeOutCubic для плавного замедления
+    // Используем easeOutCubic для плавного замедления
     const easedProgress = 1 - Math.pow(1 - progress, 3);
     angle = startAngle + (targetAngle - startAngle) * easedProgress;
 
@@ -59,12 +60,16 @@ function animateSpin(currentTime) {
          spinning = false;
          // Приводим угол к диапазону 0 - 2π
          angle = targetAngle % (2 * Math.PI);
-         let sectorSize = (2 * Math.PI) / prizes.length;
-         let winningIndex = Math.floor((angle + sectorSize / 2) / sectorSize) % prizes.length;
-         let winningPrize = prizes[winningIndex];
+
+         // Вычисляем выигрышный сектор с учётом стрелки внизу (угол стрелки = π/2)
+         const pointerAngle = Math.PI / 2;
+         const relativeAngle = (pointerAngle - angle + 2 * Math.PI) % (2 * Math.PI);
+         const sectorSize = (2 * Math.PI) / prizes.length;
+         const winningIndex = Math.floor(relativeAngle / sectorSize);
+         const winningPrize = prizes[winningIndex];
          console.log(`Выигранный приз: ${winningPrize}`);
 
-         // Отправка сообщения через Telegram WebApp API или через alert
+         // Отправляем сообщение через Telegram WebApp API или через alert
          if (window.Telegram && Telegram.WebApp) {
              console.log("Сообщение через Telegram WebApp API");
              Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
@@ -78,10 +83,13 @@ function animateSpin(currentTime) {
 }
 
 function spinWheel() {
-    if (spinning) return;
+    if (spinning || hasSpun) return; // Позволяем вращать только один раз
     spinning = true;
+    hasSpun = true;
+    spinButton.disabled = true; // Отключаем кнопку после первого спина
+
     startAngle = angle;
-    // Вычисляем случайный угол, минимум 5 оборотов
+    // Вычисляем случайный угол (минимум 5 оборотов)
     let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI);
     targetAngle = startAngle + randomAngle;
     startTime = performance.now();
