@@ -3,8 +3,6 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 import asyncio
 
-a = 'aaaa'
-
 TOKEN = "7555987714:AAFyWNVqbiTXVOfpMnpKd-aDKfS5HvLWYNk"  # Используем переменные окружения
 bot = AsyncTeleBot(TOKEN)
 

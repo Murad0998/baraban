@@ -24,7 +24,7 @@ function drawWheel(rotation) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.arc(0, 0, radius, sliceAngle * i, sliceAngle * (i + 1));
-        ctx.fillStyle = i % 2 === 0 ? "#FFD700" : "#FF4500";
+        ctx.fillStyle = i % 2 === 0 ? "#4CAF50" : "#2196F3";
         ctx.fill();
         ctx.stroke();
 
