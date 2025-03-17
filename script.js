@@ -2,6 +2,8 @@ const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
 const spinButton = document.getElementById("spinButton");
 
+console.log("Скрипт загружен!"); // Проверяем, что скрипт запустился
+
 const prizes = ["Дилдо", "Презики", "Юлдаш", "Приз 4", "Приз 5", "Приз 6"];
 let angle = 0;
 let spinning = false;
@@ -24,7 +26,7 @@ function drawWheel(rotation) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.arc(0, 0, radius, sliceAngle * i, sliceAngle * (i + 1));
-        ctx.fillStyle = i % 2 === 0 ? "#4682B4" : "#00FA9A";
+        ctx.fillStyle = i % 2 === 0 ? "#4682B4" : "#00FA9A"; // Смена цветов
         ctx.fill();
         ctx.stroke();
 
@@ -41,28 +43,31 @@ function drawWheel(rotation) {
 
 function animateSpin() {
     if (Math.abs(targetAngle - angle) > 0.01) {
+        console.log("Колесо крутится... Угол:", angle);
         angle += speed;
-        speed *= 0.98;  // Постепенное замедление
+        speed *= 0.98; // Постепенное замедление
         animationFrame = requestAnimationFrame(animateSpin);
     } else {
+        console.log("Анимация завершена! Определяем приз...");
         cancelAnimationFrame(animationFrame);
-        angle = targetAngle % (2 * Math.PI); // Угол должен быть в пределах 0 - 2π
+        angle = targetAngle % (2 * Math.PI); // Приводим угол в диапазон 0 - 2π
 
         let sectorSize = (2 * Math.PI) / prizes.length;
         let winningIndex = Math.floor((angle + sectorSize / 2) / sectorSize) % prizes.length;
         let winningPrize = prizes[winningIndex];
 
-        spinning = false;
-
-        // Отображаем результат
         console.log(`Выигранный приз: ${winningPrize}`);
 
+        spinning = false;
+
         if (window.Telegram && Telegram.WebApp) {
-            console.log("Сообщение должно появиться в Telegram");
+            console.log("Сообщение через Telegram WebApp API");
             Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
         } else {
-            console.log("Сообщение должно появиться в alert");
-            alert(`Вы выиграли: ${winningPrize}`);
+            console.log("Вывод через alert");
+            setTimeout(() => {
+                alert(`Вы выиграли: ${winningPrize}`);
+            }, 500);
         }
     }
     drawWheel(angle);
@@ -72,11 +77,15 @@ function spinWheel() {
     if (spinning) return;
     spinning = true;
 
-    let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI); // Минимум 5 полных оборотов
+    console.log("Кнопка нажата, запуск спина!");
+
+    let randomAngle = Math.random() * (2 * Math.PI) + (5 * 2 * Math.PI); // Минимум 5 оборотов
     targetAngle = angle + randomAngle;
-    speed = (targetAngle - angle) / 60; // Регулировка скорости
+    speed = (targetAngle - angle) / 60;
     animateSpin();
 }
 
-drawWheel(angle);
+console.log("Назначаем обработчик кнопки...");
 spinButton.addEventListener("click", spinWheel);
+
+drawWheel(angle);
