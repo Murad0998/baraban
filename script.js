@@ -90,18 +90,23 @@ function animateSpin(currentTime) {
     // Закончили вращение
     spinning = false;
 
-    // Приводим угол к диапазону [0..2π]
+    // Приводим угол к диапазону [0, 2π)
     angle = targetAngle % (2 * Math.PI);
-
     const sectorSize = (2 * Math.PI) / prizes.length;
 
-    // --- ИСПРАВЛЕНИЕ: вместо + sectorSize/2, ставим - sectorSize/2 ---
-    // Положение стрелки внизу (3π/2), хотим поймать центр сектора:
-    // i*(sliceAngle) + sliceAngle/2 + angle = 3π/2
-    // => i*(sliceAngle) = 3π/2 - angle - sliceAngle/2
-    let shiftedAngle = (3 * Math.PI) / 2 - angle - sectorSize / 2;
+    /*
+      Поскольку стрелка находится внизу, выигрышное направление – это π/2 (90°).
+      Центр сектора i (в статичном колесе) равен: i*sectorSize + sectorSize/2.
+      После вращения он становится: i*sectorSize + sectorSize/2 + angle.
+      Нам нужно, чтобы этот угол совпадал с π/2.
 
-    // Приводим к [0..2π]
+      Выразим смещение:
+          i*sectorSize = π/2 - angle - sectorSize/2.
+
+      Для определения индекса сектора, в который попадает стрелка, вычисляем:
+    */
+    let shiftedAngle = (Math.PI / 2) - angle - (sectorSize / 2);
+    // Нормализуем в диапазоне [0, 2π)
     shiftedAngle = (shiftedAngle + 2 * Math.PI) % (2 * Math.PI);
 
     const winningIndex = Math.floor(shiftedAngle / sectorSize);
@@ -109,7 +114,7 @@ function animateSpin(currentTime) {
 
     console.log("Выигранный приз:", winningPrize);
 
-    // Дальше — вывод результата
+    // Далее вывод результата (через Telegram.WebApp или alert)
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
     } else {
