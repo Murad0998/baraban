@@ -17,7 +17,7 @@ const prizes = [
 // Углы для анимации
 let angle = 0;          // Текущий угол колеса
 let spinning = false;   // Флаг, идёт ли вращение
-let targetAngle = 0;    // Итоговый угол
+let targetAngle = 0;    // Итоговый угол (куда крутим)
 let startAngle = 0;     // Угол начала анимации
 let startTime = 0;      // Время старта анимации
 
@@ -31,7 +31,6 @@ function drawWheel(rotation) {
 
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  // Делаем радиус чуть меньше, чтобы не упираться в границы
   const radius = Math.min(canvas.width, canvas.height) / 2 - 10;
   const sliceAngle = (2 * Math.PI) / prizes.length;
 
@@ -57,7 +56,7 @@ function drawWheel(rotation) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Текст
+    // Текст в центре сектора
     ctx.save();
     ctx.rotate(startSlice + sliceAngle / 2);
     ctx.textAlign = "right";
@@ -90,23 +89,18 @@ function animateSpin(currentTime) {
     // Закончили вращение
     spinning = false;
 
-    // Приводим угол к диапазону [0, 2π)
-    angle = targetAngle % (2 * Math.PI);
+    // Нормируем угол [0..2π]
+    angle = angle % (2 * Math.PI);
+    if (angle < 0) angle += 2 * Math.PI;
+
     const sectorSize = (2 * Math.PI) / prizes.length;
 
     /*
-      Поскольку стрелка находится внизу, выигрышное направление – это π/2 (90°).
-      Центр сектора i (в статичном колесе) равен: i*sectorSize + sectorSize/2.
-      После вращения он становится: i*sectorSize + sectorSize/2 + angle.
-      Нам нужно, чтобы этот угол совпадал с π/2.
-
-      Выразим смещение:
-          i*sectorSize = π/2 - angle - sectorSize/2.
-
-      Для определения индекса сектора, в который попадает стрелка, вычисляем:
+      1) Сдвигаем угол на -sectorSize/2, чтобы "центр" сектора попадал на 0.
+      2) Приводим к [0..2π).
+      3) Делим на sectorSize и берем floor.
     */
-    let shiftedAngle = (Math.PI / 2) - angle - (sectorSize / 2);
-    // Нормализуем в диапазоне [0, 2π)
+    let shiftedAngle = angle - sectorSize / 2;
     shiftedAngle = (shiftedAngle + 2 * Math.PI) % (2 * Math.PI);
 
     const winningIndex = Math.floor(shiftedAngle / sectorSize);
@@ -114,7 +108,7 @@ function animateSpin(currentTime) {
 
     console.log("Выигранный приз:", winningPrize);
 
-    // Далее вывод результата (через Telegram.WebApp или alert)
+    // Дальше — вывод результата
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
     } else {
