@@ -88,16 +88,18 @@ function animateSpin(currentTime) {
     requestAnimationFrame(animateSpin);
   } else {
     // Закончили вращение
-    // Закончили вращение
     spinning = false;
 
-    // Нормируем угол [0..2π]
+    // Приводим угол к диапазону [0..2π]
     angle = targetAngle % (2 * Math.PI);
 
     const sectorSize = (2 * Math.PI) / prizes.length;
 
-    // Сдвигаем угол, учитывая положение стрелки внизу (3π/2)
-    let shiftedAngle = (Math.PI) - angle + sectorSize / 2;
+    // --- ИСПРАВЛЕНИЕ: вместо + sectorSize/2, ставим - sectorSize/2 ---
+    // Положение стрелки внизу (3π/2), хотим поймать центр сектора:
+    // i*(sliceAngle) + sliceAngle/2 + angle = 3π/2
+    // => i*(sliceAngle) = 3π/2 - angle - sliceAngle/2
+    let shiftedAngle = (3 * Math.PI) / 2 - angle - sectorSize / 2;
 
     // Приводим к [0..2π]
     shiftedAngle = (shiftedAngle + 2 * Math.PI) % (2 * Math.PI);
@@ -107,9 +109,7 @@ function animateSpin(currentTime) {
 
     console.log("Выигранный приз:", winningPrize);
 
-    // Дальше — вывод результата через alert или Telegram.WebApp
-
-    // Выводим результат (через Telegram.WebApp или alert)
+    // Дальше — вывод результата
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.showAlert(`Вы выиграли: ${winningPrize}`);
     } else {
@@ -136,7 +136,7 @@ function spinWheel() {
   requestAnimationFrame(animateSpin);
 }
 
-// Назначаем обработчик на нашу круглую кнопку в центре
+// Назначаем обработчик на кнопку
 spinButton.addEventListener("click", spinWheel);
 
 // Начальная отрисовка (статичное колесо)
